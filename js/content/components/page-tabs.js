@@ -100,7 +100,7 @@ export default class Tab extends Component {
 
     let tabsTitles = tabContents.map((tab, index) => {
       let tabTitle = tab.title || 'No name';
-      let tabContent = tab.textContent || 'no Content';
+      let tabContent = tab.textContent;
       tab.dataset.elementId = index;
       tab.dataset.element = 'tab-content';
 
