@@ -4,7 +4,7 @@ import Tab from "./components/page-tabs.js";
 export default class Page extends Component {
   constructor({ element }) {
     super({ element });
-    this._tabs = null;
+    this._tabs = [];
 
     this._initTabs();
 
@@ -12,14 +12,18 @@ export default class Page extends Component {
       tab.subscribe("tab-selected", ({ title, content }) => {
         console.log("this is own eventSystem");
         console.log(`Tab ${title} was selected \n ${content}`);
+
+        let activeTab = tab.getCurrentTab();
+        console.log(`Tab ${activeTab.title} is active`);
       });
 
       tab.getElement().addEventListener("tab-selected", event => {
         let { title } = event.detail;
-        console.log("this is built In eventSystem");
-        console.log(title);
+        console.log("\nthis is built In eventSystem");
+        console.log('title: ' + title);
       });
     });
+
   }
 
   _initTabs() {

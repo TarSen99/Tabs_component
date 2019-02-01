@@ -3,12 +3,17 @@ import Component from "../../component.js";
 export default class Tab extends Component {
   constructor({ element }) {
     super({ element });
-    this._tabs = null;
-    this._tabTitles = null;
+    this._tabContents = [];
+    this._tabTitles = [];
 
-    this.on("click", '[data-element="tab-title"]', e => {
-      this._selectNewTab(e);
-      this.emit("tab-selected", {
+    this.on('click', '[data-element="tab-title"]', e => {
+      let newTabWasSelected = this._selectNewTab(e);
+
+      if(!newTabWasSelected) {
+        return;
+      }
+
+      this.emit('tab-selected', {
         title: e.target.dataset.title,
         content: e.target.dataset.content
       });
@@ -18,30 +23,54 @@ export default class Tab extends Component {
     this._getTabsTitlesList();
   }
 
+  getCurrentTab() {
+    let activeTabTitle = this._element.querySelector('.tab-header-active');
+
+    return {
+      title: activeTabTitle.dataset.title,
+      content: activeTabTitle.dataset.content};
+  }
+
   getElement() {
     return this._element;
   }
 
   _cleanTabsStyle() {
     this._tabTitles.forEach(tabTitle => {
-      tabTitle.classList.remove("tab-header-active");
+      tabTitle.classList.remove('tab-header-active');
     });
 
-    this._tabs.forEach(tabTitle => {
-      tabTitle.style.display = "none";
+    this._tabContents.forEach(tabTitle => {
+      tabTitle.style.display = 'none';
     });
   }
 
-  _selectNewTab(e) {
-    this._cleanTabsStyle();
-    let tabTitle = e.target.closest('[data-element="tab-title"]');
+  _checkIfCurrentTabIsSelected(tabTitle) {
+    if(tabTitle.classList.contains('tab-header-active')) {
+      return true;
+    }
 
-    let tab = this._tabs.find(tab => {
+    return;
+  }
+
+  _selectNewTab(e) {
+    let tabTitle = e.target.closest('[data-element="tab-title"]');
+    let tabIsAlreadySelected = this._checkIfCurrentTabIsSelected(tabTitle);
+
+    if(tabIsAlreadySelected) {
+      return;
+    }
+
+    this._cleanTabsStyle();
+
+    let tab = this._tabContents.find(tab => {
       return tab.dataset.elementId === tabTitle.dataset.elementId;
     });
 
-    tabTitle.classList.add("tab-header-active");
-    tab.style.display = "block";
+    tabTitle.classList.add('tab-header-active');
+    tab.style.display = 'block';
+
+    return true;
   }
 
   _getTabsTitlesList() {
@@ -61,19 +90,19 @@ export default class Tab extends Component {
         return;
       }
 
-      tab.style.display = "block";
+      tab.style.display = 'block';
     });
   }
 
   _renderTabsHeader(tabsElement) {
-    let tabs = [...tabsElement.querySelectorAll("tab")];
-    this._tabs = tabs;
+    let tabContents = [...tabsElement.querySelectorAll("tab")];
+    this._tabContents = tabContents;
 
-    let tabsTitles = tabs.map((tab, index) => {
-      let tabTitle = tab.title || "No name";
-      let tabContent = tab.textContent || "no Content";
+    let tabsTitles = tabContents.map((tab, index) => {
+      let tabTitle = tab.title || 'No name';
+      let tabContent = tab.textContent || 'no Content';
       tab.dataset.elementId = index;
-      tab.dataset.element = "tab-content";
+      tab.dataset.element = 'tab-content';
 
       return { tabTitle, tabContent, index };
     });
@@ -83,22 +112,22 @@ export default class Tab extends Component {
                 ${tabsTitles
                   .map((infoMap, index) => {
                     let currentClass =
-                      "tab-header " +
-                      `${index === 0 ? "tab-header-active" : ""}`;
+                      'tab-header ' +
+                      `${index === 0 ? 'tab-header-active' : ''}`;
 
-                    return `<li data-title="${infoMap["tabTitle"].trim()}"
-                        data-content="${infoMap["tabContent"].trim()}"
-                        data-element="tab-title"
-                        data-element-id="${infoMap["index"]}"
+                    return `<li data-title="${infoMap['tabTitle'].trim()}"
+                        data-content="${infoMap['tabContent'].trim()}"
+                        data-element='tab-title'
+                        data-element-id="${infoMap['index']}"
                         class="${currentClass}"
                          >
-                           ${infoMap["tabTitle"]}
+                           ${infoMap['tabTitle']}
                      </li>`;
                   })
                   .join("")}
             </ul>
         </tabs-header>`;
 
-    tabsElement.insertAdjacentHTML("afterbegin", tabsHeaderHTML);
+    tabsElement.insertAdjacentHTML('afterbegin', tabsHeaderHTML);
   }
 }
