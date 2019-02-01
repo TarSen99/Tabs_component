@@ -95,7 +95,7 @@ export default class Tab extends Component {
   }
 
   _renderTabsHeader(tabsElement) {
-    let tabContents = [...tabsElement.querySelectorAll("tab")];
+    let tabContents = [...tabsElement.querySelectorAll('tab')];
     this._tabContents = tabContents;
 
     let tabsTitles = tabContents.map((tab, index) => {
@@ -123,8 +123,7 @@ export default class Tab extends Component {
                          >
                            ${infoMap['tabTitle']}
                      </li>`;
-                  })
-                  .join("")}
+                  }).join('')}
             </ul>
         </tabs-header>`;
 
